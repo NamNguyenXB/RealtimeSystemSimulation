@@ -5,11 +5,13 @@
  */
 package realtimesys.model;
 
+import java.io.Serializable;
+
 /**
  *
  * @author namng
  */
-public class Task {
+public class Task implements Serializable{
     int id;
     String name;
     static int cnt;
@@ -42,5 +44,9 @@ public class Task {
     
     private int getNewId(){
         return cnt++;
+    }
+    
+    public static int getCnt(){
+        return cnt;
     }
 }

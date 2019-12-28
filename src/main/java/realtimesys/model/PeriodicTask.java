@@ -47,4 +47,8 @@ public class PeriodicTask extends RestrictedTimeTask{
         this.e = e;
         this.rDeadline = p;
     }
+    
+    public String getShortInfo(){
+        return String.format("(%f, %f, %f, %f)", phase, p, e, rDeadline);
+    }
 }

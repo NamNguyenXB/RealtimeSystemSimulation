@@ -8,8 +8,10 @@ package realtimesys.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import javax.swing.JFrame;
 
@@ -105,6 +107,34 @@ public class BarChart extends javax.swing.JPanel {
         return (int)(this.getHeight());
     }
     
+    private int calLabelHeight(Graphics g, BlockInfo blockInfo){
+        int fontsize = this.getHeight() / 3;
+        if (fontsize > 20){
+            fontsize = 20;
+        }
+        int textWidth = g.getFontMetrics(new Font("TimesRoman", Font.PLAIN, 
+                fontsize)).stringWidth(blockInfo.getLabel());
+        if (textWidth > calBlockWidth(blockInfo)) {
+            return -1;
+        } else {
+            return fontsize;
+        }
+    }
+    
+    private int calLabelWidth(Graphics g, int fontsize, BlockInfo blockInfo){
+        return g.getFontMetrics(new Font("TimesRoman", Font.PLAIN, 
+                fontsize)).stringWidth(blockInfo.getLabel());
+    }
+    
+    private Point calLabelPos(int labelW, int labelH, Rectangle bound){
+        if (labelW > bound.width || labelH > bound.height){
+            return null;
+        }
+        int x = bound.x + bound.width/2 - labelW/2;
+        int y = bound.y + bound.height/2 + labelH/2;
+        return new Point(x,y);
+    }
+    
     private void paintBlock(Graphics g, BlockInfo blockInfo){
         if(isBlockValid(blockInfo) && this.isVisible()){
             // Save the current color of graph.
@@ -118,7 +148,22 @@ public class BarChart extends javax.swing.JPanel {
             g.fillRect(blockPos.x, blockPos.y, w, h);
             g.setColor(blockInfo.getBoderColor());
             g.drawRect(blockPos.x, blockPos.y, w, h);
-            
+            String label = blockInfo.getLabel();
+            if (label != null && !label.isEmpty()) {
+                int labelH = calLabelHeight(g, blockInfo);
+                if (labelH > 0) {
+                    System.out.print("fs: "+labelH+" h: "+h);
+                    int labelW = calLabelWidth(g, labelH, blockInfo);
+                    Point labelPos = calLabelPos(labelW, labelH,
+                            new Rectangle(blockPos.x, blockPos.y, w, h));
+                    Font f = g.getFont();
+                    g.setColor(Color.BLACK);
+                    g.setFont(new Font("TimesRoman", Font.PLAIN, labelH));
+                    g.drawString(blockInfo.getLabel(), labelPos.x, labelPos.y);
+                    g.setFont(f);
+                }
+            }
+
             // Restore the color of graph.
             g.setColor(bkColor);
         }
@@ -146,6 +191,11 @@ public class BarChart extends javax.swing.JPanel {
         BlockInfo b1 = new BlockInfo(0, 2, Color.BLUE, Color.BLACK);
         BlockInfo b2 = new BlockInfo(4, 2, Color.RED, Color.BLACK);
         BlockInfo b3 = new BlockInfo(7, 3, Color.YELLOW, Color.BLACK);
+        
+        b1.setLabel("task1");
+        b2.setLabel("task2");
+        b3.setLabel("task3");
+        
         b.setSize(500, 20);
         b.frameSize = 20;
         frame.setLayout(new BorderLayout());

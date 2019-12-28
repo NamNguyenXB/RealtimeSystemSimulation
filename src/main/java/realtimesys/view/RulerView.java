@@ -8,6 +8,7 @@ package realtimesys.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import javax.swing.JFrame;
 
@@ -57,6 +58,8 @@ public class RulerView extends javax.swing.JPanel {
      */
     public void setMax(double max) {
         this.max = max;
+        if (this.min > 0)
+            this.setSize((int)(this.min*this.max*unit), this.getHeight());
     }
 
     
@@ -77,8 +80,11 @@ public class RulerView extends javax.swing.JPanel {
      */
     public void setMin(double min) {
         this.min = min;
+        if (this.max > 0)
+            this.setSize((int)(this.min*this.max*unit), this.getHeight());
     }
 
+    private double unit = 20;
     @Override
     protected void paintComponent(Graphics g)
     {
@@ -91,6 +97,15 @@ public class RulerView extends javax.swing.JPanel {
             int lx = (int)(i * (this.getWidth()-mg*2) / max);
             if(i % interval == 0){
                 g.drawLine(lx+mg, baseY + bigH/2, lx+mg, baseY - bigH/2);
+                Font bkf = g.getFont();
+                int fontsize = bkf.getSize();
+                int sx=i==0?lx+mg:i==max?lx+mg - g.getFontMetrics().stringWidth(
+                        String.valueOf(i)):lx+mg - g.getFontMetrics().
+                                stringWidth(String.valueOf(i));
+                int sy=baseY * 2 + fontsize + fontsize/3;
+                
+                g.drawString(String.valueOf(i), sx, sy);
+                g.setFont(bkf);
             }
             else{
                 g.drawLine(lx+mg, baseY + smallH/2, lx+mg, baseY - smallH/2);
@@ -116,7 +131,6 @@ public class RulerView extends javax.swing.JPanel {
     public void setWs(double ws) {
         this.ws = ws;
     }
-
     
     @Override
     public Dimension getPreferredSize() {
@@ -135,12 +149,14 @@ public class RulerView extends javax.swing.JPanel {
         JFrame frame = new JFrame("Bar Chart");	
         RulerView b = new RulerView();
         b.setSize(500, 20);
-        b.max = 20;
-        b.min = 1;
-        b.interval = 5;
-        frame.setLayout(new BorderLayout());
-        frame.getContentPane().add(b, BorderLayout.CENTER);
-        b.repaint();
+        b.max = 10;
+        b.min = 0.5;
+        b.interval = 2.5;
+        //frame.setLayout(new BorderLayout());
+        //frame.getContentPane().add(b, BorderLayout.CENTER);
+        frame.setLayout(null);
+        frame.getContentPane().add(b);
+        //b.repaint();
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();

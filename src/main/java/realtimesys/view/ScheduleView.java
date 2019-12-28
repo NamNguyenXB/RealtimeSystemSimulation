@@ -5,17 +5,64 @@
  */
 package realtimesys.view;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.util.ArrayList;
+import javax.swing.JFrame;
+
 /**
  *
  * @author namng
  */
 public class ScheduleView extends javax.swing.JPanel {
 
+    @Override
+    protected void paintComponent(Graphics g)
+    {
+        ruler.setSize(this.getWidth(), this.getHeight());
+    }
+
+    ArrayList<BarChart> schedules = new ArrayList<>();
+    RulerView ruler = new RulerView();
     /**
      * Creates new form ScheduleView
      */
     public ScheduleView() {
+        
+        ruler.setMax(20);
+        ruler.setMin(1);
+        ruler.setInterval(5);
+        this.add(ruler);
         initComponents();
+    }
+    
+    public static void main(String[] args){
+        ScheduleView view = new ScheduleView();
+        
+        JFrame frame = new JFrame("Bar Chart");	
+        BarChart b = new BarChart();
+        BlockInfo b1 = new BlockInfo(0, 2, Color.BLUE, Color.BLACK);
+        BlockInfo b2 = new BlockInfo(4, 2, Color.RED, Color.BLACK);
+        BlockInfo b3 = new BlockInfo(7, 3, Color.YELLOW, Color.BLACK);
+        
+        b1.setLabel("task1");
+        b2.setLabel("task2");
+        b3.setLabel("task3");
+        
+        b.setSize(500, 20);
+        b.frameSize = 20;
+        frame.setLayout(new BorderLayout());
+        //frame.getContentPane().add(b, BorderLayout.CENTER);
+        frame.getContentPane().add(view, BorderLayout.CENTER);
+        b.addBlock(b1);
+        b.addBlock(b2);
+        b.addBlock(b3);
+        b.repaint();
+
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
     }
 
     /**

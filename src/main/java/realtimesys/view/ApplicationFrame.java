@@ -144,7 +144,7 @@ public class ApplicationFrame extends javax.swing.JFrame {
             }
         });
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "RM", "DM", "LST", "EDF" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "RM", "LST", "EDF" }));
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBox1ActionPerformed(evt);
@@ -477,6 +477,7 @@ public class ApplicationFrame extends javax.swing.JFrame {
             double max = frameSize;
             ArrayList<BlockInfo> blocks = new ArrayList<>();
             List<Assignment> assignments = schedule.getJobAssignments();
+            this.logTextBox.setText("");
             for(int i = 0; i < assignments.size(); i++){
                 Color blkColor = assignments.get(i).getEndTime() > assignments.
                         get(i).getJob().getDeadline()? conflictColor:getColor(

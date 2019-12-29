@@ -6,6 +6,7 @@
 package realtimesys.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -90,13 +91,22 @@ public class LSTScheduler implements Scheduler{
             double frameSize = hyperPeriod + calSchedulePhase();
             assignments = new ArrayList<>();
             atss.add(new LSTAvailableTimeslot(0,frameSize));
-            ArrayList<PeriodicTask> tasks_bk = Arrays.copyOf(tasks, tasks.length);
+            //ArrayList<PeriodicTask> tasks_bk = Arrays.copyOf(tasks, tasks.size());
+            
+            double[] bkexe = new double[tasks.size()];
+            for(int i = 0; i < tasks.size(); i++){
+                bkexe[i] = tasks.get(i).getExeTime();
+                System.out.print("bke:"+bkexe[i]+"\r\n");
+            }
             for(int i = 0; i < tasks.size(); i++){
                 atss = scheduleTask(tasks.get(i), hyperPeriod, atss);
                 if (tasks.get(i).e == 0){
-                    tasks.get(i).e = tasks_bk.get(i).e;
+                    tasks.get(i).e = bkexe[i];
                 }
                 else tasks.get(i).e = tasks.get(i).e - 1;
+            }
+            for(int i = 0; i < tasks.size();i ++){
+                tasks.get(i).setExeTime(bkexe[i]);
             }
             this.schedule = new Schedule(assignments);
         }

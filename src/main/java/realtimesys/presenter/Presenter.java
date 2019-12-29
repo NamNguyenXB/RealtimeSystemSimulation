@@ -73,15 +73,15 @@ public class Presenter implements AddTaskPresenter, AppPresenter, EditTaskPresen
                 System.out.print("Switch to RMScheduler");
                 scheduler = new RMScheduler();
                 break;
+//            case 1:
+//                System.out.print("Switch to DMScheduler");
+//                scheduler = new DMScheduler();
+//                break;
             case 1:
-                System.out.print("Switch to DMScheduler");
-                scheduler = new DMScheduler();
-                break;
-            case 2:
                 System.out.print("Switch to LSTScheduler");
                 scheduler = new LSTScheduler();
                 break;
-            case 3:
+            case 2:
                 System.out.print("Switch to EDFScheduler");
                 scheduler = new EDFScheduler();
                 break;

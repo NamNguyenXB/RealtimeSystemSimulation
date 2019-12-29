@@ -12,6 +12,7 @@ import realtimesys.model.EDFScheduler;
 import realtimesys.model.LSTScheduler;
 import realtimesys.model.PeriodicTask;
 import realtimesys.model.RMScheduler;
+import static realtimesys.model.RMScheduler.lcm;
 import realtimesys.model.Scheduler;
 import realtimesys.model.Task;
 import realtimesys.view.AddTaskFrame;
@@ -25,6 +26,10 @@ import realtimesys.view.EditTaskView;
 public class Presenter implements AddTaskPresenter, AppPresenter, EditTaskPresenter, ShortViewPresenter {
 
     Scheduler scheduler;
+
+    public Presenter() {
+        this.scheduler = new RMScheduler(); 
+    }
     @Override
     public void addTask(Task task) {
         if(appView != null && task instanceof PeriodicTask){
@@ -89,9 +94,25 @@ public class Presenter implements AddTaskPresenter, AppPresenter, EditTaskPresen
             scheduler.setTasks(tasks);
             scheduler.startSchedule();
             if(appView != null){
-                appView.displaySchedule(scheduler.getSchedule());
+                double frameSize = calFrameSize(tasks);
+                appView.displaySchedule(frameSize, scheduler.getSchedule());
             }
         }
+    }
+    
+    private double calFrameSize(List<Task> tasks){
+        return (calHyperPeriod(tasks) + calSchedulePhase(tasks));
+    }
+    
+    private double calHyperPeriod(List<Task> tasks){
+        double h = -1;
+        if(tasks != null && tasks.size() > 0){
+            h = ((PeriodicTask)(tasks.get(0))).getPeriod();
+            for(int i = 1; i < tasks.size(); i++){
+                h = lcm(h, ((PeriodicTask)(tasks.get(i))).getPeriod());
+            }
+        }
+        return h;
     }
 
     @Override
@@ -114,6 +135,18 @@ public class Presenter implements AddTaskPresenter, AppPresenter, EditTaskPresen
     @Override
     public void Delete(Task task) {
         appView.DeleteTask(task);
+    }
+
+    private double calSchedulePhase(List<Task> tasks) {
+        double phase = 0;
+        if(tasks != null && tasks.size() > 0){
+            for(int i = 0; i < tasks.size(); i++){
+                if(((PeriodicTask)tasks.get(i)).getPhase() > phase){
+                    phase = ((PeriodicTask)tasks.get(i)).getPhase();
+                }
+            }
+        }
+        return phase;
     }
     
 }

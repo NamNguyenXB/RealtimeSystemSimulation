@@ -49,4 +49,8 @@ public class Task implements Serializable{
     public static int getCnt(){
         return cnt;
     }
+    
+    public static void resetCnt(){
+        cnt = 0;
+    }
 }

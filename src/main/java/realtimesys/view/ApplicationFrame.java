@@ -181,7 +181,7 @@ public class ApplicationFrame extends javax.swing.JFrame {
         rulerView2.setLayout(rulerView2Layout);
         rulerView2Layout.setHorizontalGroup(
             rulerView2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 242, Short.MAX_VALUE)
+            .addGap(0, 200, Short.MAX_VALUE)
         );
         rulerView2Layout.setVerticalGroup(
             rulerView2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -192,7 +192,7 @@ public class ApplicationFrame extends javax.swing.JFrame {
         scheduleChart.setLayout(scheduleChartLayout);
         scheduleChartLayout.setHorizontalGroup(
             scheduleChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 200, Short.MAX_VALUE)
         );
         scheduleChartLayout.setVerticalGroup(
             scheduleChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -203,8 +203,11 @@ public class ApplicationFrame extends javax.swing.JFrame {
         schedulePanel.setLayout(schedulePanelLayout);
         schedulePanelLayout.setHorizontalGroup(
             schedulePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(rulerView2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(scheduleChart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(schedulePanelLayout.createSequentialGroup()
+                .addGroup(schedulePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(rulerView2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(scheduleChart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(42, 42, 42))
         );
         schedulePanelLayout.setVerticalGroup(
             schedulePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -340,11 +343,14 @@ public class ApplicationFrame extends javax.swing.JFrame {
         
         FileInputStream fileIn;
         try {
+            PeriodicTask.resetCnt();
+            this.colorTable = new Hashtable();
+            this.colorSeed = 0;
             fileIn = new FileInputStream(chosenFile.getAbsolutePath());
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
- 
             Object obj = objectIn.readObject();
             ArrayList<PeriodicTask> ts = (ArrayList)obj;
+            
             if(ts.size() > 0){
                 System.out.print("Parse OK");
             }
@@ -354,6 +360,8 @@ public class ApplicationFrame extends javax.swing.JFrame {
             setTasks(ts);
             System.out.println("The Object has been read from the file");
             objectIn.close();
+            this.pack();
+            this.repaint();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(ApplicationFrame.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -396,6 +404,7 @@ public class ApplicationFrame extends javax.swing.JFrame {
     
     private void updateShortViews(){
         taskShortView.removeAll();
+        taskShorts = new ArrayList<>();
         if(tasks != null){
             for(int i = 0; i < tasks.size(); i++){
                 TaskInfoShortViewWithEdit v = createShortView(tasks.get(i));
@@ -457,32 +466,30 @@ public class ApplicationFrame extends javax.swing.JFrame {
         return new Color(v * 10, v * 10, v * 10);
     }
     
-    public void displaySchedule(Schedule schedule){
+    public void displaySchedule(double frameSize, Schedule schedule){
         if (schedule != null){
             scheduleChart.clearView();
-            double max = 0;
+            double max = frameSize;
             ArrayList<BlockInfo> blocks = new ArrayList<>();
             List<Assignment> assignments = schedule.getJobAssignments();
-            
             for(int i = 0; i < assignments.size(); i++){
-                
                 Color blkColor = assignments.get(i).getEndTime() > assignments.
                         get(i).getJob().getDeadline()? conflictColor:getColor(
                                 assignments.get(i).getJob().getTask().getId());
-                
+                double blklen = assignments.get(i).getEndTime() - assignments.get(i).getBeginTime();
                 BlockInfo b = new BlockInfo(assignments.get(i).getBeginTime(), 
-                        assignments.get(i).getEndTime(), blkColor, Color.BLACK);
+                        blklen, blkColor, Color.BLACK);
                 blocks.add(b);
-                if (max < assignments.get(i).getEndTime()){
-                    max = assignments.get(i).getEndTime();
-                }
             }
             scheduleChart.setFrameSize(max);
-            double min = max/100;
+            double min = (double) Math.round(max / 20 * 100) / 100;;
+
             rulerView2.setMax(max);
             rulerView2.setMin(min);
-            rulerView2.setInterval(min*10);
+            rulerView2.setInterval(min*5);
             scheduleChart.setBlocks(blocks);
+            this.pack();
+            this.repaint();
         }
     }
     

@@ -172,6 +172,7 @@ public class BarChart extends javax.swing.JPanel {
     @Override
     protected void paintComponent(Graphics g)
     {
+        super.paintComponent(g);
         if(blocks != null){
             blocks.forEach((b) -> {
                 paintBlock(g, b);

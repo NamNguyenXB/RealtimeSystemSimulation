@@ -93,18 +93,19 @@ public class RulerView extends javax.swing.JPanel {
         int bigH = this.getHeight() * 2 / 3;
         int mg = (int)(this.getWidth() * this.ws / 100); 
         g.drawLine(mg, baseY, this.getWidth() - mg, baseY);
-        for(double i = 0; i <= max; i+=min){
+        for(double i = 0; Math.round(i*100)/100 <= max; i+=min){
+            //System.out.print("i="+i+" max="+max+"\r\n");
             int lx = (int)(i * (this.getWidth()-mg*2) / max);
-            if(i % interval == 0){
+            if(Math.round(i*100) % Math.round(interval*100) == 0){
                 g.drawLine(lx+mg, baseY + bigH/2, lx+mg, baseY - bigH/2);
                 Font bkf = g.getFont();
                 int fontsize = bkf.getSize();
-                int sx=i==0?lx+mg:i==max?lx+mg - g.getFontMetrics().stringWidth(
-                        String.valueOf(i)):lx+mg - g.getFontMetrics().
-                                stringWidth(String.valueOf(i));
+                int sx=i==0?lx+mg:max - i < min?lx+mg - g.getFontMetrics().stringWidth(
+                        String.valueOf(Math.round(i*100)/100)):lx+mg - g.getFontMetrics().
+                                stringWidth(String.valueOf(Math.round(i*100)/100));
                 int sy=baseY * 2 + fontsize + fontsize/3;
                 
-                g.drawString(String.valueOf(i), sx, sy);
+                g.drawString(String.valueOf(Math.round(i*100)/100), sx, sy);
                 g.setFont(bkf);
             }
             else{

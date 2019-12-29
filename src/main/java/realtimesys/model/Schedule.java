@@ -18,8 +18,16 @@ public class Schedule {
     public Schedule(){
         jobAssignments = new ArrayList<>();
     }
+
+    public Schedule(List<Assignment> jobAssignments) {
+        this.jobAssignments = jobAssignments;
+    }
     
     public List<Assignment> getJobAssignments(){
         return this.jobAssignments;
+    }
+    
+    public void setJobAssignments(List<Assignment> value){
+        this.jobAssignments = value;
     }
 }

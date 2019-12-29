@@ -104,6 +104,8 @@ public class ApplicationFrame extends javax.swing.JFrame {
         rulerView2 = new realtimesys.view.RulerView();
         scheduleChart = new realtimesys.view.BarChart();
         logPanel = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        logTextBox = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
@@ -218,16 +220,13 @@ public class ApplicationFrame extends javax.swing.JFrame {
                 .addComponent(rulerView2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        javax.swing.GroupLayout logPanelLayout = new javax.swing.GroupLayout(logPanel);
-        logPanel.setLayout(logPanelLayout);
-        logPanelLayout.setHorizontalGroup(
-            logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        logPanelLayout.setVerticalGroup(
-            logPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 111, Short.MAX_VALUE)
-        );
+        logPanel.setLayout(new java.awt.BorderLayout());
+
+        logTextBox.setColumns(20);
+        logTextBox.setRows(5);
+        jScrollPane2.setViewportView(logTextBox);
+
+        logPanel.add(jScrollPane2, java.awt.BorderLayout.CENTER);
 
         javax.swing.GroupLayout backgroundPanelLayout = new javax.swing.GroupLayout(backgroundPanel);
         backgroundPanel.setLayout(backgroundPanelLayout);
@@ -343,7 +342,7 @@ public class ApplicationFrame extends javax.swing.JFrame {
         
         FileInputStream fileIn;
         try {
-            PeriodicTask.resetCnt();
+            
             this.colorTable = new Hashtable();
             this.colorSeed = 0;
             fileIn = new FileInputStream(chosenFile.getAbsolutePath());
@@ -353,6 +352,12 @@ public class ApplicationFrame extends javax.swing.JFrame {
             
             if(ts.size() > 0){
                 System.out.print("Parse OK");
+                
+                //Walkaround.
+                PeriodicTask.resetCnt();
+                for(int i = 0; i < ts.size(); i++){
+                    Task t = new Task();
+                }
             }
             else{
                 System.out.print("Parse result: " + ts.size());
@@ -481,6 +486,15 @@ public class ApplicationFrame extends javax.swing.JFrame {
                         blklen, blkColor, Color.BLACK);
                 b.setLabel("T"+assignments.get(i).getJob().getTask().getId());
                 blocks.add(b);
+                String log = "[Job"+assignments.get(i).getJob().getTask().getId()
+                        + "."+assignments.get(i).getJob().getId() + "] begin: " + 
+                        assignments.get(i).getBeginTime() + " end: " +assignments.get(i).getEndTime();
+                if(assignments.get(i).getEndTime() > assignments.get(i).getJob().getDeadline()){
+                    log+=" --miss deadline";
+                }
+                log +="\r\n";
+                
+                this.logTextBox.append(log);
                 if(max < assignments.get(i).getEndTime())
                 {
                     max = assignments.get(i).getEndTime();
@@ -493,6 +507,10 @@ public class ApplicationFrame extends javax.swing.JFrame {
             rulerView2.setMin(min);
             rulerView2.setInterval(min*5);
             scheduleChart.setBlocks(blocks);
+//            for(int i = 0; i < 100; i++){
+//                this.logTextBox.append("Hello");
+//            }
+            
             this.pack();
             this.repaint();
         }
@@ -562,7 +580,9 @@ public class ApplicationFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPanel logPanel;
+    private javax.swing.JTextArea logTextBox;
     private javax.swing.JButton reloadButton;
     private realtimesys.view.RulerView rulerView2;
     private realtimesys.view.BarChart scheduleChart;

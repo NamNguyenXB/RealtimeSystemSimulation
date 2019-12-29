@@ -157,7 +157,7 @@ public class BarChart extends javax.swing.JPanel {
                     Point labelPos = calLabelPos(labelW, labelH,
                             new Rectangle(blockPos.x, blockPos.y, w, h));
                     Font f = g.getFont();
-                    g.setColor(Color.BLACK);
+                    g.setColor(Color.WHITE);
                     g.setFont(new Font("TimesRoman", Font.PLAIN, labelH));
                     g.drawString(blockInfo.getLabel(), labelPos.x, labelPos.y);
                     g.setFont(f);

@@ -85,6 +85,7 @@ public class RMScheduler implements Scheduler{
 
     @Override
     public void startSchedule() {
+        extend = -1;
         if(tasks != null && tasks.size() > 0){
             double hyperPeriod = calHyperPeriod();
             Collections.sort(tasks, new FComparator());
@@ -156,8 +157,21 @@ public class RMScheduler implements Scheduler{
                 }
             }
         }
+        else{
+            if(extend == -1){
+                extend = calHyperPeriod() + calSchedulePhase();
+            }
+            Assignment a = new Assignment();
+            a.beginTime = extend;
+            a.endTime = extend + j.getTask().getExeTime();
+            a.job = j;
+            extend = a.endTime;
+            assignments.add(a);
+        }
         return atss;
     }
+    
+    private double extend=-1;
     
     private List<AvailableTimeslot> scheduleTask(PeriodicTask task, double hyperPeriod, List<AvailableTimeslot> atss){
         int k = (int)(hyperPeriod/task.getPeriod());

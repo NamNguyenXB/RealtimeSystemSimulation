@@ -479,7 +479,12 @@ public class ApplicationFrame extends javax.swing.JFrame {
                 double blklen = assignments.get(i).getEndTime() - assignments.get(i).getBeginTime();
                 BlockInfo b = new BlockInfo(assignments.get(i).getBeginTime(), 
                         blklen, blkColor, Color.BLACK);
+                b.setLabel("T"+assignments.get(i).getJob().getTask().getId());
                 blocks.add(b);
+                if(max < assignments.get(i).getEndTime())
+                {
+                    max = assignments.get(i).getEndTime();
+                }
             }
             scheduleChart.setFrameSize(max);
             double min = (double) Math.round(max / 20 * 100) / 100;;
